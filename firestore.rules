@@ -1,0 +1,88 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global Safety Net: Default Deny catch-all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // --- Hardened Global Primitive Helpers ---
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // --- Entity Validation Blueprints ---
+    function isValidFarm(data) {
+      return data.id is string && data.id.size() <= 128
+          && data.name is string && data.name.size() > 0 && data.name.size() <= 128
+          && data.capacity is number && data.capacity >= 0;
+    }
+
+    function isValidCow(data) {
+      return data.id is string && data.id.size() <= 128
+          && data.breed is string && data.breed.size() <= 128
+          && data.farmId is string && data.farmId.size() <= 128
+          && data.weight is number && data.weight >= 0;
+    }
+
+    function isValidEvent(data) {
+      return data.id is string && data.id.size() <= 128
+          && data.cowId is string && data.cowId.size() <= 128
+          && data.farmId is string && data.farmId.size() <= 128
+          && data.title is string && data.title.size() <= 128
+          && data.type is string && data.type.size() <= 64;
+    }
+
+    // --- Path Rules & Collections ---
+
+    // 1. Farms Collection
+    match /farms/{farmId} {
+      allow create: if isValidId(farmId) && isValidFarm(incoming());
+      allow get: if isValidId(farmId);
+      allow list: if true; // Allows clients to list farms, filtered client-side or queries
+      allow update: if isValidId(farmId) && isValidFarm(incoming()) 
+                     && incoming().id == existing().id; // Immortality of ID
+      allow delete: if isValidId(farmId);
+    }
+
+    // 2. Cows Collection
+    match /cows/{cowId} {
+      allow create: if isValidId(cowId) && isValidCow(incoming());
+      allow get: if isValidId(cowId);
+      allow list: if true;
+      allow update: if isValidId(cowId) && isValidCow(incoming()) 
+                     && incoming().id == existing().id
+                     && incoming().farmId == existing().farmId; // Immortality of farm association
+      allow delete: if isValidId(cowId);
+    }
+
+    // 3. Events Collection
+    match /events/{eventId} {
+      allow create: if isValidId(eventId) && isValidEvent(incoming());
+      allow get: if isValidId(eventId);
+      allow list: if true;
+      allow update: if isValidId(eventId) && isValidEvent(incoming()) 
+                     && incoming().id == existing().id
+                     && incoming().cowId == existing().cowId; // Immortality of cow reference
+      allow delete: if isValidId(eventId);
+    }
+
+    // 4. Users Collection
+    match /users/{userEmail} {
+      allow read, write: if true;
+    }
+  }
+}

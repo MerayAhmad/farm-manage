@@ -1,0 +1,6 @@
+{
+  "name": "Akbeitara - Cattle Farm Management",
+  "description": "أكبيطرة الذكية - تطبيق متكامل لإدارة مزارع الأبقار ومتابعة الحالات الصحية، التلقيح، إنتاج الحليب، والأحداث الطارئة لكل بقرة من الولادة أو الشراء حتى البيع أو الوفاة مع دعم ذكي للتقارير والتحليلات.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

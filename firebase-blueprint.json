@@ -1,0 +1,250 @@
+{
+  "entities": {
+    "Farm": {
+      "title": "Farm",
+      "description": "Represents a cattle dairy or meat farm in Syria.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the farm."
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the farm.",
+          "maxLength": 128
+        },
+        "location": {
+          "type": "string",
+          "description": "City or area of the farm."
+        },
+        "capacity": {
+          "type": "number",
+          "description": "Maximum cow count capacity."
+        },
+        "notes": {
+          "type": "string",
+          "description": "Optional administrative notes."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "governorate": {
+          "type": "string",
+          "description": "Syrian governorate location."
+        },
+        "district": {
+          "type": "string",
+          "description": "Syrian district/region location."
+        },
+        "ownerEmail": {
+          "type": "string",
+          "description": "Email of the registered breeder owner."
+        },
+        "ownerName": {
+          "type": "string",
+          "description": "Full name of the breeder owner."
+        }
+      },
+      "required": ["id", "name", "capacity"]
+    },
+    "Cow": {
+      "title": "Cow",
+      "description": "Represents an individual cow in the herd.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Ear tag international barcode barcode."
+        },
+        "rfid": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "breed": {
+          "type": "string"
+        },
+        "birthDate": {
+          "type": "string"
+        },
+        "entryDate": {
+          "type": "string"
+        },
+        "entryMethod": {
+          "type": "string",
+          "enum": ["birth", "purchase"]
+        },
+        "purchasePrice": {
+          "type": "number"
+        },
+        "gender": {
+          "type": "string",
+          "enum": ["female", "male"]
+        },
+        "status": {
+          "type": "string"
+        },
+        "healthStatus": {
+          "type": "string"
+        },
+        "weight": {
+          "type": "number"
+        },
+        "birthWeight": {
+          "type": "number"
+        },
+        "color": {
+          "type": "string"
+        },
+        "barn": {
+          "type": "string"
+        },
+        "group": {
+          "type": "string"
+        },
+        "farmId": {
+          "type": "string"
+        },
+        "motherId": {
+          "type": "string"
+        },
+        "fatherId": {
+          "type": "string"
+        },
+        "supplier": {
+          "type": "string"
+        },
+        "numberOfCalvings": {
+          "type": "number"
+        },
+        "lastInseminationDate": {
+          "type": "string"
+        },
+        "lastCalvingDate": {
+          "type": "string"
+        },
+        "milkStartOfSeasonDate": {
+          "type": "string"
+        },
+        "milkYield": {
+          "type": "number"
+        },
+        "exitDate": {
+          "type": "string"
+        },
+        "exitReason": {
+          "type": "string"
+        },
+        "exitPrice": {
+          "type": "number"
+        },
+        "exitNotes": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["id", "breed", "birthDate", "farmId"]
+    },
+    "CattleEvent": {
+      "title": "CattleEvent",
+      "description": "Medical, operational, or status event recorded for a cow.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "cowId": {
+          "type": "string"
+        },
+        "farmId": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "date": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "description": {
+          "type": "string"
+        },
+        "severity": {
+          "type": "string",
+          "enum": ["normal", "warning", "critical"]
+        },
+        "cost": {
+          "type": "number"
+        },
+        "recordedBy": {
+          "type": "string"
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "required": ["id", "cowId", "farmId", "type", "date", "title"]
+    },
+    "User": {
+      "title": "User",
+      "description": "Represents breeder or admin accounts.",
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string",
+          "enum": ["admin", "breeder"]
+        },
+        "farmId": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "nationalId": {
+          "type": "string"
+        },
+        "address": {
+          "type": "string"
+        }
+      },
+      "required": ["email", "role"]
+    }
+  },
+  "firestore": {
+    "/farms/{farmId}": {
+      "schema": "Farm",
+      "description": "Collection of dairy and meat livestock farms."
+    },
+    "/cows/{cowId}": {
+      "schema": "Cow",
+      "description": "Collection of all cattle RFID and ear-tagged records."
+    },
+    "/events/{eventId}": {
+      "schema": "CattleEvent",
+      "description": "Medical, vaccination, breeding, and production event timelines."
+    },
+    "/users/{userEmail}": {
+      "schema": "User",
+      "description": "Collection of all registered user accounts."
+    }
+  }
+}
